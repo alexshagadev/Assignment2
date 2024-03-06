@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,7 +53,7 @@ namespace Assignment2.Components.Pages.Data
         // TODO
         // define the airports file path  
         // ...................................
-        public static string AIRPORTS_TEXT = "";    // TODO (Update the path)
+        public static string AIRPORTS_TEXT = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\..\Resources\Files\airports.csv");    // TODO (Update the path) 
 
         public static List<Flight> flights = new List<Flight>();
         public static List<string> airports = new List<string>();
@@ -125,12 +126,18 @@ namespace Assignment2.Components.Pages.Data
          */
         public static List<Flight> findFlights(string from, string to, string weekday)
         {
+            // Debugging - I didn't see that the airport path needed to be updatted so I kept getting object reference errors because the airports list was empty :)
+            System.Diagnostics.Debug.WriteLine($"Flights count: {flights.Count}");
+            System.Diagnostics.Debug.WriteLine($"Airports count: {airports.Count}");
+
             List<Flight> found = new List<Flight>();
 
-           // TODO
-           // find all flights that match the input arguments  
-           // ...................................
-           // test commit
+            // Check each flight in the flights list to match its origin, destination, and weekday. 
+            foreach (Flight flight in flights) {
+                 if ((flight.From.Equals(from) && flight.To.Equals(to)) && (weekday.Equals(WEEKDAY_ANY) || flight.Weekday.Equals(weekday))) {
+                     found.Add(flight); 
+                 }
+            }
 
             return found;
         }
