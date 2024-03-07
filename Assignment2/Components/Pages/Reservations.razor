@@ -1,4 +1,4 @@
-﻿@page "/reservations"
+@page "/reservations"
 
 @using Assignment2.Components.Pages.Data;
 @using System.Text;
@@ -181,22 +181,103 @@
         resNew.Clear();
         Reservation NewReservation;
 
-        if ((inputResCode != "") || (inputAirline != "") || (inputName != ""))
+                // TODO
+                // add other cases to be able to find flight by code and/or name and/or airline
+                // ...................................
+
+                /* These following conditions will find Resevered flights 
+                * It will find reserved flights from reservation.csv file according to
+                * user inputs of reservation code and/or airline and/or name.
+                */
+
+
+               /*
+                * Below given code can find flights if all three input are filled 
+                * OR
+                * Any two input fields are provided .
+                * OR
+                * Only one input field is provided by the user.
+                */
+
+
+               //code from line 204 to 241 are conditions which will respond if two input values are provided by user
+
+        if ((inputResCode != "") && (inputAirline != ""))
         {
             foreach (var res in reservations)
             {
-                if (((inputResCode != "") && (inputResCode.ToUpper() == res.Code.ToUpper())) &&
+                if ((inputResCode != "") && (inputResCode.ToUpper() == res.Code.ToUpper()) &&
+                ((inputAirline != "") && (inputAirline.ToUpper() == res.Airline.ToUpper())))
+                {
+                    NewReservation = new Reservation(res.Code, res.FlightCode, res.Airline, res.Cost, res.Name, res.Citizenship, res.Active);
+                    resNew.Add(NewReservation);
+                }
+
+            }
+        }
+
+        else if ((inputName != "") && (inputAirline != ""))
+        {
+            foreach (var res in reservations)
+            {
+                if ((inputAirline != "") && (inputAirline.ToUpper() == res.Airline.ToUpper()) &&
+                 ((inputName != "") && (inputName.ToUpper() == res.Name.ToUpper())))
+                {
+                    NewReservation = new Reservation(res.Code, res.FlightCode, res.Airline, res.Cost, res.Name, res.Citizenship, res.Active);
+                    resNew.Add(NewReservation);
+                }
+            }
+        }
+        else if ((inputName != "") && (inputResCode != ""))
+        {
+            foreach (var res in reservations)
+            {
+                if ((inputResCode != "") && (inputResCode.ToUpper() == res.Code.ToUpper()) &&
+                  ((inputName != "") && (inputName.ToUpper() == res.Name.ToUpper())))
+                {
+                    NewReservation = new Reservation(res.Code, res.FlightCode, res.Airline, res.Cost, res.Name, res.Citizenship, res.Active);
+                    resNew.Add(NewReservation);
+                }
+            }
+        }
+        // This code find reserve flights if any one input is filled by user
+        else if ((inputResCode != "") || (inputAirline != "") || (inputName != ""))
+        {
+            foreach (var res in reservations)
+            {
+
+
+                if ((inputResCode != "") && (inputResCode.ToUpper() == res.Code.ToUpper()))
+                {
+                    NewReservation = new Reservation(res.Code, res.FlightCode, res.Airline, res.Cost, res.Name, res.Citizenship, res.Active);
+                    resNew.Add(NewReservation);
+                }
+                else if ((inputAirline != "") && (inputAirline.ToUpper() == res.Airline.ToUpper()))
+                {
+                    NewReservation = new Reservation(res.Code, res.FlightCode, res.Airline, res.Cost, res.Name, res.Citizenship, res.Active);
+                    resNew.Add(NewReservation);
+                }
+                else if ((inputName != "") && (inputName.ToUpper() == res.Name.ToUpper()))
+                {
+                    NewReservation = new Reservation(res.Code, res.FlightCode, res.Airline, res.Cost, res.Name, res.Citizenship, res.Active);
+                    resNew.Add(NewReservation);
+                }
+
+                /*Below condition was given in sekeleton
+                 * I chnaged it from an 'if' statement to 'else if'.
+                 */
+
+                else if (((inputResCode != "") && (inputResCode.ToUpper() == res.Code.ToUpper())) &&
                     ((inputAirline != "") && (inputAirline.ToUpper() == res.Airline.ToUpper())) &&
                     ((inputName != "") && (inputName.ToUpper() == res.Name.ToUpper())))
                 {
                     NewReservation = new Reservation(res.Code, res.FlightCode, res.Airline, res.Cost, res.Name, res.Citizenship, res.Active);
                     resNew.Add(NewReservation);
                 }
-                // TODO
-                // add other cases to be able to find flight by code and/or name and/or airline
-                // ...................................
             }
         }
+
+
         else
         {
             resNew = reservations;
