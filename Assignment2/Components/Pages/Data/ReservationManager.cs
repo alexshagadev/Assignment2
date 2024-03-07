@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.PortableExecutable;
@@ -47,6 +47,19 @@ namespace Assignment2.Components.Pages.Data
                 // add a case to get reservation by Name   
                 // add a case to get reservation by Airline   
                 // ...................................
+
+                /* Added casesto find flights by Name or Airline.*/
+
+                else if (reservation.Name.Contains(name))
+                {
+                    found.Add(reservation);
+                }
+                else if (reservation.Airline.Contains(airline))
+                {
+                    found.Add(reservation);
+                }
+
+
             }
 
             return found;
