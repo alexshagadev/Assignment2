@@ -13,6 +13,17 @@ namespace Assignment2.Components.Pages.Data
        * Used to search for flights on any day of the week.
        */
         public static string WEEKDAY_ANY = "Any";
+
+        /**
+       * Used to search for flights going from any origin.
+       */
+        public static string FROM_ANY = "Any";
+
+        /**
+       * Used to search for flights going to any destination.
+       */
+        public static string TO_ANY = "Any";
+
         /**
          * Used to search for flights on Sunday.
          */
@@ -134,8 +145,22 @@ namespace Assignment2.Components.Pages.Data
 
             // Check each flight in the flights list to match its origin, destination, and weekday. 
             foreach (Flight flight in flights) {
+                // These conditions are a bit messy but they do the job. You know what they say, don't fix what isn't broken haha
+                // Handles most cases
                  if ((flight.From.Equals(from) && flight.To.Equals(to)) && (weekday.Equals(WEEKDAY_ANY) || flight.Weekday.Equals(weekday))) {
-                     found.Add(flight); 
+                     found.Add(flight);
+                 }
+                 // When origin is set to ANY.
+                 else if ((from.Equals(FROM_ANY) && flight.To.Equals(to)) && (weekday.Equals(WEEKDAY_ANY) || flight.Weekday.Equals(weekday))) {
+                    found.Add(flight);
+                 }
+                 // When the destination is set to ANY.
+                 else if ((flight.From.Equals(from) && to.Equals(TO_ANY)) && (weekday.Equals(WEEKDAY_ANY) || flight.Weekday.Equals(weekday))) {
+                    found.Add(flight);
+                 }
+                 // When everything is set to ANY.
+                 else if ((from.Equals(FROM_ANY) && to.Equals(TO_ANY)) && (weekday.Equals(WEEKDAY_ANY) || flight.Weekday.Equals(weekday))) {
+                    found.Add(flight);
                  }
             }
 
