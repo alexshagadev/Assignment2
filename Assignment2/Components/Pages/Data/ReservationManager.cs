@@ -123,7 +123,27 @@ namespace Assignment2.Components.Pages.Data
             // and update the record in the reservation.csv file  
             // ...................................
 
+            // Reads each line checking for the appropriate Flight ID. Each datafield is split based on comma seperation. Once the Flight ID is located, the "status" field [6], is updated to string "Cancelled".
+            // It is then written to the file
+            for (int i = 0; i < lines.Count; i++)
+            {
+                var fields = lines[i].Split(",");   
+
+                var flightId = fields[0];
+
+                if (flightId == res.Code)
+                {
+                    fields[6] = "Cancelled";
+
+                    lines[i] = string.Join(",", fields);
+
+                    break;
+                }
+
+                
+            }
             File.WriteAllLines(Reservation_TXT, lines);
         }
     }
 }
+
