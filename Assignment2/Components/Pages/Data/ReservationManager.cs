@@ -6,10 +6,8 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assignment2.Components.Pages.Data
-{
-    internal class ReservationManager
-    {
+namespace Assignment2.Components.Pages.Data {
+    internal class ReservationManager {
 
         /**
          * The location of the reservation file.
@@ -29,31 +27,37 @@ namespace Assignment2.Components.Pages.Data
          * @param name Travelers name to search for.
          * @return Any matching Reservation objects.
          */
-        public List<Reservation> FindReservations(string reservationCode, string airline, string name)
-        {
+        public List<Reservation> FindReservations(string reservationCode, string airline, string name) {
             List<Reservation> found = new List<Reservation>();
 
-            foreach (Reservation reservation in reservations)
-            {
-                if (reservation.Code.Contains(reservationCode) && reservation.Airline.Contains(airline) && reservation.Name.Contains(name))
-                {
+            foreach (Reservation reservation in reservations) {
+                if (reservation.Code.Contains(reservationCode) && reservation.Airline.Contains(airline) && reservation.Name.Contains(name)) {
                     found.Add(reservation);
                 }
-                else if (reservation.Code.Contains(reservationCode))
-                {
+                else if (reservation.Code.Contains(reservationCode)) {
                     found.Add(reservation);
                 }
                 // TODO
                 // add a case to get reservation by Name   
                 // add a case to get reservation by Airline   
                 // ...................................
+
+                /* Added casesto find flights by Name or Airline.*/
+
+                else if (reservation.Name.Contains(name)) {
+                    found.Add(reservation);
+                }
+                else if (reservation.Airline.Contains(airline)) {
+                    found.Add(reservation);
+                }
+
+
             }
 
             return found;
         }
 
-        public string GenerateResCode()
-        {
+        public string GenerateResCode() {
             return GenerateReservationCode();
         }
 
@@ -62,12 +66,10 @@ namespace Assignment2.Components.Pages.Data
          * @param flight Flight instance.
          * @return Reservation code.
          */
-        public string GenerateReservationCode()
-        {           
+        public string GenerateReservationCode() {
             string reservationCode;
 
-            do
-            {
+            do {
                 char letter = (char)('A' + random.Next(26));
                 string numbers = random.Next(1000, 10000).ToString();
                 reservationCode = letter + numbers;
@@ -76,10 +78,8 @@ namespace Assignment2.Components.Pages.Data
             return reservationCode;
         }
 
-        private static bool IsCodeGenerated(string reservationCode, string Reservation_TXT)
-        {
-            if (!File.Exists(reservationCode))
-            {
+        private static bool IsCodeGenerated(string reservationCode, string Reservation_TXT) {
+            if (!File.Exists(reservationCode)) {
                 return false;
             }
 
@@ -88,11 +88,9 @@ namespace Assignment2.Components.Pages.Data
             return existingCode.Contains(reservationCode);
         }
 
-        public static List<Reservation> GetReservations() 
-        {
+        public static List<Reservation> GetReservations() {
             List<Reservation> res = new List<Reservation>();
-            foreach (string line in File.ReadLines(Reservation_TXT))
-            {
+            foreach (string line in File.ReadLines(Reservation_TXT)) {
                 string[] parts = line.Split(",");
                 string reservationCode = parts[0];
                 string flightCode = parts[1];
@@ -109,13 +107,11 @@ namespace Assignment2.Components.Pages.Data
             return res;
         }
 
-        public void AddReservation(Reservation res)
-        {
-            File.AppendAllText(Reservation_TXT, $"{res.Code},{res.FlightCode},{res.Airline},{res.Cost},{res.Name},{res.Citizenship},{res.Active}\n");            
+        public void AddReservation(Reservation res) {
+            File.AppendAllText(Reservation_TXT, $"{res.Code},{res.FlightCode},{res.Airline},{res.Cost},{res.Name},{res.Citizenship},{res.Active}\n");
         }
 
-        public void UpdateReservation(Reservation res)
-        {
+        public void UpdateReservation(Reservation res) {
             var lines = File.ReadAllLines(Reservation_TXT).ToList();
 
             // TODO
@@ -123,6 +119,23 @@ namespace Assignment2.Components.Pages.Data
             // and update the record in the reservation.csv file  
             // ...................................
 
+            // Reads each line checking for the appropriate Flight ID. Each datafield is split based on comma seperation. Once the Flight ID is located, the "status" field [6], is updated to string "Cancelled".
+            // It is then written to the file
+            for (int i = 0; i < lines.Count; i++) {
+                var fields = lines[i].Split(",");
+
+                var flightId = fields[0];
+
+                if (flightId == res.Code) {
+                    fields[6] = "Cancelled";
+
+                    lines[i] = string.Join(",", fields);
+
+                    break;
+                }
+
+
+            }
             File.WriteAllLines(Reservation_TXT, lines);
         }
     }

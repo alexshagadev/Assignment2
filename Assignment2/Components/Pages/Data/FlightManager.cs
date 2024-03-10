@@ -1,17 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assignment2.Components.Pages.Data
-{
-    internal class FlightManager
-    {
+namespace Assignment2.Components.Pages.Data {
+    internal class FlightManager {
         /**
        * Used to search for flights on any day of the week.
        */
         public static string WEEKDAY_ANY = "Any";
+
+        /**
+       * Used to search for flights going from any origin.
+       */
+        public static string FROM_ANY = "Any";
+
+        /**
+       * Used to search for flights going to any destination.
+       */
+        public static string TO_ANY = "Any";
+
         /**
          * Used to search for flights on Sunday.
          */
@@ -52,7 +62,7 @@ namespace Assignment2.Components.Pages.Data
         // TODO
         // define the airports file path  
         // ...................................
-        public static string AIRPORTS_TEXT = "";    // TODO (Update the path)
+        public static string AIRPORTS_TEXT = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\..\Resources\Files\airports.csv");    // TODO (Update the path) 
 
         public static List<Flight> flights = new List<Flight>();
         public static List<string> airports = new List<string>();
@@ -60,8 +70,7 @@ namespace Assignment2.Components.Pages.Data
         /**
          * Default constructor for FlightManager.
          */
-        public FlightManager()
-        {
+        public FlightManager() {
             populateAirports();
             populateFlights();
         }
@@ -70,8 +79,7 @@ namespace Assignment2.Components.Pages.Data
          * Gets all of the airports.
          * @return ArrayList of Airport objects.
          */
-        public List<string> getAirports()
-        {
+        public List<string> getAirports() {
             return airports;
         }
 
@@ -79,8 +87,7 @@ namespace Assignment2.Components.Pages.Data
          * Gets all of the flights.
          * @return ArrayList of Flight objects.
          */
-        public static List<Flight> getFlights()
-        {
+        public static List<Flight> getFlights() {
             return flights;
         }
 
@@ -89,10 +96,8 @@ namespace Assignment2.Components.Pages.Data
          * @param code Airport code
          * @return Airport object or null if none found.
          */
-        public string findAirportByCode(string code)
-        {
-            foreach (string airport in airports)
-            {
+        public string findAirportByCode(string code) {
+            foreach (string airport in airports) {
                 if (airport.Equals(code))
                     return airport;
             }
@@ -105,10 +110,8 @@ namespace Assignment2.Components.Pages.Data
          * @param code Flight code.
          * @return Flight object or null if none found.
          */
-        public static Flight findFlightByCode(string code)
-        {
-            foreach (Flight flight in flights)
-            {
+        public static Flight findFlightByCode(string code) {
+            foreach (Flight flight in flights) {
                 if (flight.Code.Equals(code))
                     return flight;
             }
@@ -123,13 +126,33 @@ namespace Assignment2.Components.Pages.Data
          * @param weekday Day of week (one of WEEKDAY_* constants). Use WEEKDAY_ANY for any day of the week.
          * @return Any found Flight objects.
          */
-        public static List<Flight> findFlights(string from, string to, string weekday)
-        {
+        public static List<Flight> findFlights(string from, string to, string weekday) {
+            // Debugging - I didn't see that the airport path needed to be updatted so I kept getting object reference errors because the airports list was empty :)
+            System.Diagnostics.Debug.WriteLine($"Flights count: {flights.Count}");
+            System.Diagnostics.Debug.WriteLine($"Airports count: {airports.Count}");
+
             List<Flight> found = new List<Flight>();
 
-           // TODO
-           // find all flights that match the input arguments  
-           // ...................................
+            // Check each flight in the flights list to match its origin, destination, and weekday. 
+            foreach (Flight flight in flights) {
+                // These conditions are a bit messy but they do the job. You know what they say, don't fix what isn't broken haha
+                // Handles most cases
+                if ((flight.From.Equals(from) && flight.To.Equals(to)) && (weekday.Equals(WEEKDAY_ANY) || flight.Weekday.Equals(weekday))) {
+                    found.Add(flight);
+                }
+                // When origin is set to ANY.
+                else if ((from.Equals(FROM_ANY) && flight.To.Equals(to)) && (weekday.Equals(WEEKDAY_ANY) || flight.Weekday.Equals(weekday))) {
+                    found.Add(flight);
+                }
+                // When the destination is set to ANY.
+                else if ((flight.From.Equals(from) && to.Equals(TO_ANY)) && (weekday.Equals(WEEKDAY_ANY) || flight.Weekday.Equals(weekday))) {
+                    found.Add(flight);
+                }
+                // When everything is set to ANY.
+                else if ((from.Equals(FROM_ANY) && to.Equals(TO_ANY)) && (weekday.Equals(WEEKDAY_ANY) || flight.Weekday.Equals(weekday))) {
+                    found.Add(flight);
+                }
+            }
 
             return found;
         }
@@ -137,16 +160,13 @@ namespace Assignment2.Components.Pages.Data
         /**
          * Populates flights ArrayList with Flight objects from CSV file.
          */
-        private void populateFlights()
-        {
+        private void populateFlights() {
             flights.Clear();
-            try
-            {
+            try {
                 int counter = 0;
                 Flight flight;
                 // Read the file and display it line by line.  
-                foreach (string line in File.ReadLines(FLIGHTS_TEXT))
-                {
+                foreach (string line in File.ReadLines(FLIGHTS_TEXT)) {
                     Console.WriteLine(line);
 
                     string[] parts = line.Split(",");
@@ -162,8 +182,7 @@ namespace Assignment2.Components.Pages.Data
                     string fromAirport = findAirportByCode(from);
                     string toAirport = findAirportByCode(to);
 
-                    try
-                    {
+                    try {
                         flight = new Flight(code, airline, fromAirport, toAirport, weekday, time, seatsAvailable, pricePerSeat);
 
                         flights.Add(flight);
@@ -176,8 +195,7 @@ namespace Assignment2.Components.Pages.Data
                     counter++;
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
 
             }
         }
@@ -185,13 +203,10 @@ namespace Assignment2.Components.Pages.Data
         /**
          * Populates airports with Airport objects from CSV file.
          */
-        private void populateAirports()
-        {
-            try
-            {
+        private void populateAirports() {
+            try {
                 int counter = 0;
-                foreach (string line in File.ReadLines(AIRPORTS_TEXT))
-                {
+                foreach (string line in File.ReadLines(AIRPORTS_TEXT)) {
                     string[] parts = line.Split(",");
 
                     string code = parts[0];
@@ -201,9 +216,8 @@ namespace Assignment2.Components.Pages.Data
                     counter++;
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
             }
-        } 
+        }
     }
 }
