@@ -29,24 +29,26 @@ namespace Assignment2.Components.Pages.Data
          * @param name Travelers name to search for.
          * @return Any matching Reservation objects.
          */
-        public List<Reservation> FindReservations(string reservationCode, string airline, string name)
-        {
+        public List<Reservation> FindReservations(string reservationCode, string airline, string name) {
             List<Reservation> found = new List<Reservation>();
 
-            foreach (Reservation reservation in reservations)
-            {
-                if (reservation.Code.Contains(reservationCode) && reservation.Airline.Contains(airline) && reservation.Name.Contains(name))
-                {
+            foreach (Reservation reservation in reservations) {
+                if (reservation.Code.Contains(reservationCode) && reservation.Airline.Contains(airline) && reservation.Name.Contains(name)) {
                     found.Add(reservation);
                 }
-                else if (reservation.Code.Contains(reservationCode))
-                {
+                else if (reservation.Code.Contains(reservationCode)) {
                     found.Add(reservation);
                 }
                 // TODO
-                // add a case to get reservation by Name   
-                // add a case to get reservation by Airline   
+                // add a case to get reservation by Name    
                 // ...................................
+                else if (reservation.Name.Contains(name, StringComparison.OrdinalIgnoreCase)) {
+                    found.Add(reservation);
+                }
+                // add a case to get reservation by Airline   
+                else if (reservation.Airline.Contains(airline, StringComparison.OrdinalIgnoreCase)) {
+                    found.Add(reservation);
+                }
             }
 
             return found;
@@ -114,14 +116,21 @@ namespace Assignment2.Components.Pages.Data
             File.AppendAllText(Reservation_TXT, $"{res.Code},{res.FlightCode},{res.Airline},{res.Cost},{res.Name},{res.Citizenship},{res.Active}\n");            
         }
 
-        public void UpdateReservation(Reservation res)
-        {
+        public void UpdateReservation(Reservation res) {
             var lines = File.ReadAllLines(Reservation_TXT).ToList();
 
             // TODO
             // Add code to change the status from Active to Cancelled for the selected flight
             // and update the record in the reservation.csv file  
             // ...................................
+            for (int i = 0; i < lines.Count; i++) {
+                var parts = lines[i].Split(',');
+                if (parts[0] == res.Code) {
+                    parts[6] = "Cancelled";
+                    lines[i] = string.Join(",", parts);
+                    break;
+                }
+            }
 
             File.WriteAllLines(Reservation_TXT, lines);
         }
